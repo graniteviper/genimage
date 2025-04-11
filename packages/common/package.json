@@ -1,0 +1,17 @@
+{
+  "name": "commontypes",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "exports":{
+    "./types": "./types.ts"
+  },
+  "dependencies": {
+    "zod": "^3.24.2"
+  }
+}

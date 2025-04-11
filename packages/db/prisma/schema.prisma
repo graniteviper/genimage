@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id String @id @default(uuid())
+  username String
+  profilePicture String?
+}
+
+model TrainModel {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  age       Int
+  gender    Gender
+  ethnicity Ethnicity
+  eyeColor  EyeColor
+  status    statusEnum @default(Pending)
+  triggerWord String?
+  zipUrl String?
+  tensorPath String?
+  userId String
+  bald      Boolean
+  trainingImages trainingImages[]
+  falAIRequestId String?
+  outputImages outputImages[]
+}
+
+model trainingImages {
+  id String @id @default(uuid())
+  imageUrl String
+  modelId String
+  model   TrainModel @relation(fields: [modelId], references: [id])
+}
+
+model outputImages {
+  id String @id @default(uuid())
+  imageUrl String 
+  modelId String 
+  model   TrainModel @relation(fields: [modelId], references: [id])
+  falAIRequestId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId String
+  prompt String 
+  status statusEnum @default(Pending) 
+}
+
+model Pack{
+  id String @id @default(uuid())
+  name String
+}
+
+model packPrompts{
+  id String @id @default(uuid())
+  prompt String
+  packId String
+}
+
+enum Gender {
+  male
+  female
+  other
+}
+
+enum Ethnicity {
+  White
+  Black
+  Asian_American @map("Asian American")
+  East_Asian @map("East Asian")
+  South_Asian @map("South Asian")
+  Hispanic
+  Pacific
+  Middle_Eastern @map("Middle Eastern")
+  Other
+}
+
+enum EyeColor {
+  brown
+  blue
+  green
+  hazel
+  grey
+  amber
+  other
+}
+
+enum statusEnum {
+  Pending
+  Generated
+  Failed
+}
