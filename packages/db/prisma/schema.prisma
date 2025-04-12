@@ -59,12 +59,15 @@ model outputImages {
 model Pack{
   id String @id @default(uuid())
   name String
+  packPrompts packPrompts[]
 }
 
 model packPrompts{
   id String @id @default(uuid())
   prompt String
   packId String
+  pack   Pack @relation(fields: [packId], references: [id])
+  
 }
 
 enum Gender {

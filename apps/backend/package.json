@@ -16,11 +16,13 @@
     "@types/cors": "^2.8.17",
     "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
     "cloudinary": "^2.6.0",
     "commontypes": "*",
     "cors": "^2.8.5",
     "db": "*",
     "dotenv": "^16.4.7",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2"
   }
 }

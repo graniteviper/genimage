@@ -18,7 +18,7 @@ import JSZip from "jszip";
 
 dotenv.config();
 
-export function Component({ className }: { className?: string }) {
+export function Component({ className, onuploadDone }: { className?: string, onuploadDone: (zipUrl: string) => void }) {
   return (
     <Card className={className}>
       <CardHeader>
@@ -43,7 +43,7 @@ export function Component({ className }: { className?: string }) {
                 `http://localhost:8080/pre-signed-url`
               );
               const url = res.data.url;
-              // const key = res.data.key;
+              const key = res.data.key;
 
               if (input.files) {
                 for (const file of input.files) {
@@ -53,7 +53,7 @@ export function Component({ className }: { className?: string }) {
                 const formData = new FormData();
                 formData.append("file", content);
                 const res = await axios.put(url, formData);
-                console.log(res.data);
+                onuploadDone(`${process.env.NEXT_PUBLIC_ZIP_BASE_URL_CLOUDFLARE}/${key}`)
               }
             };
             input.click();

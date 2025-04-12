@@ -2,6 +2,9 @@ import { fal } from "@fal-ai/client";
 import dotenv from "dotenv";
 
 dotenv.config();
+fal.config({
+    credentials: process.env.FAL_AI_TEST_KEY
+  });
 
 export class falAiModels{
     constructor(){}

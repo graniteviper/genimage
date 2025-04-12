@@ -9,6 +9,7 @@ import { S3Client } from "bun";
 import { falAiModels } from "./models/falAiModels";
 import dotenv from "dotenv";
 import cors from "cors";
+import { authMiddleware } from "./middlewares/auth.middleware";
 
 dotenv.config();
 
@@ -33,22 +34,11 @@ app.get("/pre-signed-url", async (req, res) => {
       key
     });
     return;
-  // const timestamp = new Date().getTime();
-  // const params = {
-  //   timestamp,
-  //   resource_type: 'auto',      // Allows for non-image file types like ZIP
-  //   folder: 'zip_uploads'       // Optional: specify a folder in your Cloudinary account
-  // };
-  // const signature = cloudinary.utils.api_sign_request(
-  //   params,
-  //   process.env.CLOUDINARY_SECRET_KEY!
-  // );
-  // res.json({ timestamp, signature });
-  // return;
 });
 
-app.post("/ai/training", async (req, res) => {
+app.post("/ai/training",authMiddleware, async (req, res) => {
   const parsedBody = trainModelType.safeParse(req.body);
+  // console.log(req.body);
   if (!parsedBody.success) {
     res.status(400).json({ error: "Error while parsing body" });
     return;
@@ -67,7 +57,7 @@ app.post("/ai/training", async (req, res) => {
       ethnicity: parsedBody.data.ethnicity,
       eyeColor: parsedBody.data.eyeColor,
       bald: parsedBody.data.bald,
-      userId: "kush",
+      userId: req.userId!,
       falAIRequestId: request_id,
     },
   });
@@ -78,7 +68,7 @@ app.post("/ai/training", async (req, res) => {
   return;
 });
 
-app.post("/ai/generate", async (req, res) => {
+app.post("/ai/generate",authMiddleware, async (req, res) => {
   const parsedBody = generateImage.safeParse(req.body);
   if (!parsedBody.success) {
     res.status(400).json({ error: "Error while parsing body" });
@@ -105,7 +95,7 @@ app.post("/ai/generate", async (req, res) => {
     data: {
       prompt: parsedBody.data.prompt,
       modelId: parsedBody.data.modelId,
-      userId: "kush",
+      userId: req.userId!,
       imageUrl: "",
       falAIRequestId: request_id,
     },
@@ -115,7 +105,7 @@ app.post("/ai/generate", async (req, res) => {
   });
 });
 
-app.post("/pack/generate", async (req, res) => {
+app.post("/pack/generate",authMiddleware, async (req, res) => {
   const parsedBody = generateImagesFromPack.safeParse(req.body);
   if (!parsedBody.success) {
     res.status(400).json({ error: "Error while parsing body" });
@@ -141,7 +131,7 @@ app.post("/pack/generate", async (req, res) => {
     data: prompts.map((prompt, index) => ({
       prompt: prompt.prompt,
       modelId: parsedBody.data.modelId,
-      userId: "kush",
+      userId: req.userId!,
       imageUrl: "",
       falAIRequestId: requestIds[index],
     })),
@@ -160,14 +150,14 @@ app.get("/pack/bulk", async (req, res) => {
   return;
 });
 
-app.get("/image/bulk", async (req, res) => {
+app.get("/image/bulk",authMiddleware, async (req, res) => {
   const images = req.query.images as string[];
   const limit = parseInt(req.query.limit as string) || 10;
   const offset = req.query.offset as string;
   const imagesData = await prisma.outputImages.findMany({
     where: {
       id: { in: images },
-      userId: "kush",
+      userId: req.userId,
     },
     skip: parseInt(offset),
     take: limit,
